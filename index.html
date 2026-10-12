@@ -4,67 +4,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tùng Lâm</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f8fafc; color: #0f172a; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Header */
+        header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 36px; height: 36px; background: #2563eb; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .logo-text h1 { font-size: 16px; font-weight: 700; }
+        .logo-text span { font-size: 11px; color: #64748b; }
+        .header-actions { display: flex; gap: 8px; }
+        .btn-outline { border: 1px solid #cbd5e1; background: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        /* Main Chat Area */
+        main { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; height: calc(100vh - 65px); padding: 15px; }
+        #chatMessages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 15px; }
+        .msg-row { display: flex; gap: 10px; width: 100%; }
+        .msg-row.user { justify-content: flex-end; }
+        .avatar { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .avatar.bot { background: #2563eb; color: #fff; }
+        .avatar.user { background: #475569; color: #fff; }
+        .msg-bubble { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+        .msg-row.bot .msg-bubble { background: #ffffff; border: 1px solid #e2e8f0; border-top-left-radius: 2px; }
+        .msg-row.user .msg-bubble { background: #2563eb; color: #ffffff; border-top-right-radius: 2px; }
+
+        /* Input Area */
+        .input-container { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 8px 12px; display: flex; gap: 10px; align-items: flex-end; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+        #userInput { flex: 1; border: none; outline: none; resize: none; font-size: 14px; max-height: 120px; line-height: 1.4; padding: 4px 0; background: transparent; }
+        #sendBtn { background: #2563eb; color: white; border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; transition: background 0.2s; }
+        #sendBtn:hover { background: #1d4ed8; }
+
+        /* Panels Drawer */
+        .drawer { position: fixed; top: 0; right: 0; width: 320px; height: 100%; background: #ffffff; box-shadow: -4px 0 15px rgba(0,0,0,0.1); padding: 20px; display: flex; flex-direction: column; gap: 15px; transform: translateX(100%); transition: transform 0.3s; z-index: 100; }
+        .drawer.active { transform: translateX(0); }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        .drawer-header h2 { font-size: 15px; }
+        .close-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #64748b; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: #475569; }
+        .form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; outline: none; }
+        .btn-primary { background: #2563eb; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .knowledge-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .knowledge-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 h-screen flex flex-col font-sans transition-colors duration-200">
+<body>
 
-    <!-- Header -->
-    <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between z-10 shrink-0">
-        <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md text-lg">
-                🤖
-            </div>
-            <div>
-                <h1 class="font-bold text-base md:text-lg leading-none">AI Tùng Lâm</h1>
-                <span class="text-xs text-slate-500 dark:text-slate-400">3 Cấp Độ: Prompt • RAG • Đa Động Cơ</span>
+    <header>
+        <div class="logo-box">
+            <div class="logo-icon">🤖</div>
+            <div class="logo-text">
+                <h1>AI Tùng Lâm</h1>
+                <span>Trợ lý AI Cá nhân</span>
             </div>
         </div>
-        
-        <div class="flex items-center space-x-2">
-            <button id="toggleKnowledgeBtn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 transition">
-                <span>📚</span>
-                <span class="hidden sm:inline">Tri thức (RAG)</span>
-                <span id="knowledgeCountBadge" class="bg-blue-600 text-white rounded-full px-1.5 py-0.2 text-[10px] hidden">0</span>
-            </button>
-            <button id="toggleConfigBtn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 transition">
-                <span>⚙️</span>
-                <span class="hidden sm:inline">Cấu hình</span>
-            </button>
-            <button id="themeToggleBtn" type="button" class="p-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm">
-                🌓
-            </button>
+        <div class="header-actions">
+            <button id="toggleKnowledgeBtn" class="btn-outline">📚 Tri thức (RAG)</button>
+            <button id="toggleConfigBtn" class="btn-outline">⚙️ Cấu hình</button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <div class="flex-1 flex overflow-hidden relative">
-
-        <!-- Panel Cấu hình -->
-        <aside id="configPanel" class="absolute inset-y-0 right-0 w-80 max-w-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-xl p-4 flex flex-col space-y-4 transform translate-x-full transition-transform duration-300 z-20 overflow-y-auto">
-            <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-                <h2 class="font-semibold text-sm flex items-center gap-1">
-                    ⚙️ Cấu hình Mô hình
-                </h2>
-                <button id="closeConfigBtn" type="button" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-500 font-bold">
-                    ✕
-                </button>
+    <main>
+        <div id="chatMessages">
+            <div class="msg-row bot">
+                <div class="avatar bot">🤖</div>
+                <div class="msg-bubble">Xin chào! Tôi là <b>AI Tùng Lâm</b>. Tôi đã sẵn sàng hỗ trợ bạn. Bạn hãy mở mục <b>Cấu hình</b> để kiểm tra API key hoặc hỏi tôi ngay nhé!</div>
             </div>
+        </div>
 
-            <div>
-                <label class="block text-xs font-medium mb-1">Động cơ xử lý (Engine):</label>
-                <select id="engineSelect" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none">
-                    <option value="gemini">Google Gemini API (Khuyên dùng)</option>
-                    <option value="builtin">Động cơ Nội trang</option>
-                    <option value="ollama">Ollama Local (http://localhost:11434)</option>
-                </select>
-            </div>
+        <div class="input-container">
+            <textarea id="userInput" rows="1" placeholder="Nhập câu hỏi tại đây... (Nhấn Enter để gửi)"></textarea>
+            <button id="sendBtn" title="Gửi">&#10148;</button>
+        </div>
+    </main>
 
-            <div id="apiKeyContainer">
-                <label class="block text-xs font-medium mb-1">Gemini API Key:</label>
-                <input type="password" id="geminiApiKey" placeholder="AIzaSy..." class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-8
+    <!-- Cấu hình Drawer -->
+    <div id="configPanel" class="drawer">
+        <div class="drawer-header">
+            <h2>⚙️ Cấu hình</h2>
+            <button id="closeConfigBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Động cơ AI:</label>
+            <select id="engineSelect">
+                <option value="gemini">Google Gemini API</option>
+                <option value="builtin">Mặc định (Không cần Key)</option>
+            </select>
+        </div>
+        <div class="form-group" id="apiKeyGroup">
+            <label>Gemini API Key:</label>
+            <input type="password" id="geminiApiKey" placeholder="AIzaSy...">
+        </div>
+        <div class="form-group" style="flex:1;">
+            <label>System Prompt (Cá tính):</label>
+            <textarea id="systemPrompt" style="height:120px;">Bạn là AI Tùng Lâm - một trợ lý ảo thông minh, lịch sự và đáng tin cậy. Hãy trả lời ngắn gọn và chính xác.</textarea>
+        </div>
+        <button id="saveConfigBtn" class="btn-primary">Lưu cấu hình</button>
+    </div>
+
+    <!-- Tri thức RAG Drawer -->
+    <div id="knowledgePanel" class="drawer">
+        <div class="drawer-header">
+            <h2>📚 Kho tri thức riêng</h2>
+            <button id="closeKnowledgeBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Dán nội dung tài liệu:</label>
+            <textarea id="knowledgeText" rows="4" placeholder="Dán văn bản nghị định, tài liệu công việc..."></textarea>
+            <button id="addKnowledgeBtn" class="btn-primary" style="margin-top:5px; background:#475569;">+ Thêm văn bản</button>
+        </div>
+        <label style="font-size:12px; font-weight:600; color:#475569;">Đoạn văn bản đã lưu:</label>
+        <div id="knowledgeList" class="knowledge-list"></div>
+    </div>
+
+    <script>
+        let knowledgeBase = JSON.parse(localStorage.getItem('ai_knowledge') || '[]');
+        let config = JSON.parse(localStorage.getItem('ai_config') || JSON.stringify({
+            engine: 'gemini',
+            apiKey: '',
+            systemPrompt: 'Bạn là AI Tùng Lâm - một trợ lý ảo thông minh, lịch sự và đáng tin cậy. Hãy trả lời ngắn gọn và chính xác.'
+        }));
+
+        const configPanel = document.getElementById('configPanel');
+        const knowledgePanel = document.getElementById('knowledgePanel');
+        const toggleConfigBtn = document.getElementById('toggleConfigBtn');
+        const closeConfigBtn = document.getElementById('closeConfigBtn');
+        const toggleKnowledgeBtn = document.getElementById('toggleKnowledgeBtn');
+        const closeKnowledgeBtn = document.getElementById('closeKnowledgeBtn');
+        const engineSelect = document.getElementById('engineSelect');
+        const apiKeyGroup = document.getElementById('apiKeyGroup');
+        const geminiApiKey = document.getElementById('geminiApiKey');
+        const systemPrompt = document.getElementById('systemPrompt');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const knowledgeText = document.getElementById('knowledgeText');
+        const addKnowledgeBtn = document.getElementById('addKnowledgeBtn');
+        const knowledgeList = document.getElementById('knowledgeList');
+
+        // Load ban đầu
+        engineSelect.value = config.engine || 'gemini';
+        geminiApiKey.value = config.apiKey || '';
+        systemPrompt.value = config.systemPrompt;
+        updateEngineUI();
+        renderKnowledgeList();
+
+        function updateEngineUI() {
+            apiKeyGroup.style.display = (engineSelect.value === 'gemini') ? 'flex' : 'none';
+        }
+        engineSelect.onchange = updateEngineUI;
+
+        toggleConfigBtn.onclick = () => { configPanel.classList.toggle('active'); knowledgePanel.classList.remove('active'); };
+        closeConfigBtn.onclick = () => configPanel.classList.remove('active');
+        toggleKnowledgeBtn.onclick = () => { knowledgePanel.classList.toggle('active'); configPanel.classList.remove('active'); };
+        closeKnowledgeBtn.onclick = () => knowledgePanel.classList.remove('active');
+
+        saveConfigBtn.onclick = () => {
+            config.engine = engineSelect.value;
+            config.apiKey = geminiApiKey.value.trim();
+            config.systemPrompt = systemPrompt.value.trim();
+            localStorage.setItem('ai_config', JSON.stringify(config));
+            alert('Đã lưu cấu hình!');
+            configPanel.classList.remove('active');
+        };
+
+        function renderKnowledgeList() {
+            if (knowledgeBase.length === 0) {
+                knowledgeList.innerHTML = '<span style="color:#94a3b8; font-size:12px; text-align:center;">Chưa có dữ liệu nào.</span>';
+                return;
+            }
+            knowledgeList.innerHTML = knowledgeBase.map((txt, i) => `
+                <div class="knowledge-item">
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px;">${txt}</span>
+                    <button onclick="removeKnowledge(${i})" style="border:none; background:none; cursor:pointer; color:#ef4444;">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        window.removeKnowledge = (i) => {
+            knowledgeBase.splice(i, 1);
+            localStorage.setItem('ai_knowledge', JSON.stringify(knowledgeBase));
+            renderKnowledgeList();
+        };
+
+        addKnowledgeBtn.onclick = () => {
+            const val = knowledgeText.value.trim();
+            if (val) {
+                knowledgeBase.push(val);
+                localStorage.setItem('ai_knowledge', JSON.stringify(knowledgeBase));
+                knowledgeText.value = '';
+                renderKnowledgeList();
+            }
+        };
+
+        function findContext(q) {
+            if (!knowledgeBase.length) return "";
+            const words = q.toLowerCase().split(/\s+/);
+            const res = knowledgeBase.filter(txt => words.some(w => w.length > 2 && txt.toLowerCase().includes(w)));
+            return res.slice(0, 3).join('\n---\n');
+        }
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        sendBtn.onclick = sendMessage;
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMsg('user', text);
+            userInput.value = '';
+
+            const context = findContext(text);
+            const botMsgDiv = appendMsg('bot', 'Đang suy nghĩ...');
+
+            try {
+                let answer = "";
+                if (config.engine === 'gemini') {
+                    if (!config.apiKey) throw new Error("Chưa điền Gemini API Key! Hãy bấm vào mục Cấu hình ở góc trên để điền key.");
+                    
+                    const fullPrompt = `${config.systemPrompt}\n\n${context ? 'Ngữ cảnh:\n' + context + '\n\n' : ''}Câu hỏi: ${text}`;
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${config.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
+                    });
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    answer = data.candidates[0].content.parts[0].text;
+                } else {
+                    await new Promise(r => setTimeout(r, 600));
+                    answer = context ? `[Tri thức RAG]: ${context}` : `AI Tùng Lâm đã nhận: "${text}". Mời bạn vào Cấu hình để dán Gemini API Key nhé!`;
+                }
+                botMsgDiv.querySelector('.msg-bubble').innerHTML = answer;
+            } catch (err) {
+                botMsgDiv.querySelector('.msg-bubble').innerHTML = `<span style="color:#ef4444;">⚠️ Lỗi: ${err.message}</span>`;
+            }
+        }
+
+        function appendMsg(role, text) {
+            const row = document.createElement('div');
+            row.className = `msg-row ${role}`;
+            row.innerHTML = `
+                <div class="avatar ${role}">${role === 'bot' ? '🤖' : '👤'}</div>
+                <div class="msg-bubble">${text}</div>
+            `;
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return row;
+        }
+    </script>
+</body>
+</html>
