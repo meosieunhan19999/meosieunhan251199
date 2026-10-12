@@ -319,7 +319,7 @@
                 if (config.engine === 'gemini') {
                     if (!config.apiKey) throw new Error("Chưa điền Gemini API Key trong phần Cấu hình.");
                     const prompt = `${config.systemPrompt}\n\n${context ? 'Ngữ cảnh tài liệu:\n' + context + '\n\n' : ''}Câu hỏi: ${message}`;
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.apiKey}`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
