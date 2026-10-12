@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom AI Assistant</title>
+    <title>AI Tùng Lâm</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -23,7 +23,7 @@
                 <i data-lucide="bot" class="w-5 h-5"></i>
             </div>
             <div>
-                <h1 class="font-bold text-base md:text-lg leading-none">Custom AI Assistant</h1>
+                <h1 class="font-bold text-base md:text-lg leading-none">AI Tùng Lâm</h1>
                 <span class="text-xs text-slate-500 dark:text-slate-400">3 Cấp Độ: Prompt • RAG • Đa Động Cơ</span>
             </div>
         </div>
@@ -81,7 +81,7 @@
 
             <div class="flex-1 flex flex-col">
                 <label class="block text-xs font-medium mb-1">System Prompt (Vai trò & Tính cách):</label>
-                <textarea id="systemPrompt" rows="7" class="w-full flex-1 text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none resize-none">Bạn là một trợ lý ảo thông minh, lịch sự và đáng tin cậy. Nếu có tài liệu ngữ cảnh đính kèm, hãy ưu tiên trả lời dựa trên tài liệu đó. Nếu không có thông tin, hãy thành thật trả lời là không biết.</textarea>
+                <textarea id="systemPrompt" rows="7" class="w-full flex-1 text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none resize-none">Bạn là AI Tùng Lâm - một trợ lý ảo thông minh, nhiệt tình, lịch sự và đáng tin cậy. Nếu có tài liệu ngữ cảnh đính kèm, hãy ưu tiên trả lời dựa trên tài liệu đó. Nếu không có thông tin, hãy thành thật trả lời là không biết.</textarea>
             </div>
 
             <button id="saveConfigBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition">
@@ -129,7 +129,7 @@
                         <i data-lucide="bot" class="w-4 h-4"></i>
                     </div>
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] text-sm leading-relaxed">
-                        Xin chào! Tôi là trợ lý AI của bạn. Hãy vào mục <b>Cấu hình</b> để dán API key hoặc vào <b>Tri thức (RAG)</b> để tải tài liệu lên nhé!
+                        Xin chào! Tôi là <b>AI Tùng Lâm</b>. Hãy vào mục <b>Cấu hình</b> để dán API key hoặc vào <b>Tri thức (RAG)</b> để tải tài liệu lên nhé!
                     </div>
                 </div>
             </div>
@@ -157,7 +157,7 @@
             engine: 'gemini',
             apiKey: '',
             ollamaModel: 'llama3',
-            systemPrompt: 'Bạn là một trợ lý ảo thông minh, lịch sự và đáng tin cậy. Nếu có tài liệu ngữ cảnh đính kèm, hãy ưu tiên trả lời dựa trên tài liệu đó. Nếu không có thông tin, hãy thành thật trả lời là không biết.'
+            systemPrompt: 'Bạn là AI Tùng Lâm - một trợ lý ảo thông minh, nhiệt tình, lịch sự và đáng tin cậy. Nếu có tài liệu ngữ cảnh đính kèm, hãy ưu tiên trả lời dựa trên tài liệu đó. Nếu không có thông tin, hãy thành thật trả lời là không biết.'
         }));
 
         const configPanel = document.getElementById('configPanel');
@@ -341,7 +341,7 @@
                     if (context) {
                         responseText = `[Tra cứu từ tài liệu RAG]:\n\nTôi tìm thấy thông tin liên quan sau đây:\n"${context}"\n\nBạn có muốn biết thêm chi tiết nào khác không?`;
                     } else {
-                        responseText = `Tôi đã nhận câu hỏi: "${message}". Hiện tại trang đang chạy ở chế độ Động cơ Nội trang. Để trò chuyện thông minh như ChatGPT, bạn hãy mở mục Cấu hình và điền Gemini API Key nhé!`;
+                        responseText = `Tôi là AI Tùng Lâm, đã nhận câu hỏi: "${message}". Hiện tại trang đang chạy ở chế độ Động cơ Nội trang. Để trò chuyện thông minh như ChatGPT, bạn hãy mở mục Cấu hình và điền Gemini API Key nhé!`;
                     }
                 }
 
@@ -361,18 +361,4 @@
                 ? `<div class="w-8 h-8 rounded-lg bg-slate-700 text-white flex items-center justify-center shrink-0"><i data-lucide="user" class="w-4 h-4"></i></div>`
                 : `<div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-4 h-4"></i></div>`;
 
-            const bubbleHtml = `
-                <div class="msg-content ${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-tl-none'} p-3.5 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed whitespace-pre-wrap">
-                    ${content}
-                </div>
-            `;
-
-            wrapper.innerHTML = iconHtml + bubbleHtml;
-            chatMessages.appendChild(wrapper);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            if (window.lucide) lucide.createIcons();
-            return wrapper;
-        }
-    </script>
-</body>
-</html>
+            const bubbleHtml
